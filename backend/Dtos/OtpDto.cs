@@ -1,0 +1,1 @@
+public record OtpDto(string PhoneNumber, string Code);

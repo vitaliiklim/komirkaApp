@@ -1,0 +1,1 @@
+public record PaymentDto(int BookingId, decimal Amount, string Method);
