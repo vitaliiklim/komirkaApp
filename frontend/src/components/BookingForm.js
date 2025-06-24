@@ -7,7 +7,12 @@ export function BookingForm({ lockerId }) {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    await createBooking({ lockerId, from, to });
+    await createBooking({
+      lockerId,
+      startTime: from,
+      endTime: to,
+    });
+    alert('Booking created');
   };
 
   return (

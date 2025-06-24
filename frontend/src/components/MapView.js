@@ -59,7 +59,7 @@ export default function MapView() {
         />
         <button onClick={handleLoad}>Apply</button>
       </div>
-      <MapContainer center={[50.45, 30.52]} zoom={12} className="map-container">
+      <MapContainer center={[49.5535, 25.5948]} zoom={13} className="map-container">
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         {lockers.map(l => (
           <Marker key={l.id} position={[l.latitude, l.longitude]}>

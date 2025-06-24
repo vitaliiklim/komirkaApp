@@ -1,8 +1,10 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using KomirkaApp.Api.Data;
 using KomirkaApp.Api.Models;
+using KomirkaApp.Api.Dtos;
 
 namespace KomirkaApp.Api.Controllers
 {
@@ -40,8 +42,27 @@ namespace KomirkaApp.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Booking booking)
+        public async Task<IActionResult> Create([FromBody] CreateBookingDto dto)
         {
+            var locker = await _db.Lockers.FindAsync(dto.LockerId);
+            if (locker == null)
+                return BadRequest("Locker not found");
+
+            // TODO: get user id from JWT when auth is implemented
+            var userId = 1;
+
+            var hours = (dto.EndTime - dto.StartTime).TotalHours;
+            var price = (decimal)Math.Ceiling(hours) * locker.HourlyPrice;
+
+            var booking = new Booking
+            {
+                UserId = userId,
+                LockerId = dto.LockerId,
+                StartTime = dto.StartTime,
+                EndTime = dto.EndTime,
+                Price = price
+            };
+
             _db.Bookings.Add(booking);
             await _db.SaveChangesAsync();
             return CreatedAtAction(nameof(Get), new { id = booking.Id }, booking);

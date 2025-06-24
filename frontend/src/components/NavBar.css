@@ -1,9 +1,15 @@
 .navbar {
   display: flex;
+  align-items: center;
   gap: 20px;
   background: #fff;
   padding: 10px 20px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.navbar .brand {
+  font-weight: bold;
+  color: #333;
+  margin-right: auto;
 }
 .navbar a {
   color: #007BFF;
