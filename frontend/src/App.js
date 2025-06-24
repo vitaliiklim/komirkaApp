@@ -1,27 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { LoginForm } from './components/LoginForm';
-import { MapView } from './components/MapView';
-import './App.css';
-import { getLockers } from './api/lockers';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import NavBar from './components/NavBar';
+import LandingPage from './components/LandingPage';
+import AuthForm from './components/AuthForm';
+import MapView from './components/MapView';
+import Dashboard from './components/Dashboard';
 
-function App() {
-  const [user, setUser] = useState(null);
-  const [lockers, setLockers] = useState([]);
-
-  useEffect(() => {
-    if (user) {
-      getLockers().then(res => setLockers(res.data));
-    }
-  }, [user]);
-
-  if (!user) return <LoginForm onLogin={setUser} />;
-
+export default function App() {
   return (
-    <div className="App">
-      <h1>Welcome, {user.email}</h1>
-      <MapView lockers={lockers} />
-    </div>
+    <Router>
+      <NavBar />
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/auth/:mode" element={<AuthForm />} />
+        <Route path="/lockers" element={<MapView />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
+    </Router>
   );
 }
-
-export default App;

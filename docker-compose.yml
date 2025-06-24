@@ -1,14 +1,4 @@
 services:
-  api:
-    build: ./backend
-    ports:
-      - "8000:80"
-    environment:
-      - ASPNETCORE_URLS=http://+:80
-  frontend:
-    build: ./frontend
-    ports:
-      - "3000:80"
   db:
     image: mysql:8
     environment:
@@ -16,5 +6,35 @@ services:
       MYSQL_USER: komirka
       MYSQL_PASSWORD: komirka
       MYSQL_ROOT_PASSWORD: root
+    networks:
+      - komirka-net
+
+  api:
+    build: ./backend
     ports:
-      - "3306:3306"
+      - "8000:80"
+    environment:
+      ASPNETCORE_URLS: "http://+:80"
+      ConnectionStrings__DefaultConnection: "server=db;database=komirka;user=komirka;password=komirka"
+    depends_on:
+      - db
+    networks:
+      - komirka-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # Арґумент, який CRA підхоплює при збірці
+        REACT_APP_API_URL: http://192.168.0.107:8000/api
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    networks:
+      - komirka-net
+
+networks:
+  komirka-net:
+    driver: bridge

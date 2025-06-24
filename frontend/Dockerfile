@@ -1,24 +1,25 @@
-# збірка React-додатку
+# ---- Build stage ----
 FROM node:18-alpine AS build
 WORKDIR /app
 
-# копіюємо package.json та package-lock.json для скорочення кешу
+# Кешуємо залежності
 COPY package*.json ./
-COPY .env ./
-# встановлюємо залежності за lock-файлом
-RUN npm install 
+RUN npm install
 
-# копіюємо весь код та збираємо production-бандл
+# Копіюємо весь код і збираємо
 COPY . .
+ARG REACT_APP_API_URL
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
 RUN npm run build
 
-# runtime-стадія на базі Nginx
+# ---- Production stage ----
 FROM nginx:alpine
-# копіюємо зібрані статичні файли в директорію Nginx
+
+# Копіюємо зібраний React-app
 COPY --from=build /app/build /usr/share/nginx/html
 
-# відкриваємо порт 80
-EXPOSE 80
+# Копіюємо свій кастомний конфіг для SPA fallback
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# запускаємо Nginx у foreground
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

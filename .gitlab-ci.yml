@@ -1,0 +1,77 @@
+variables:
+  # GitLab Container Registry
+  CI_REGISTRY: "192.168.0.107:5050"
+
+stages:
+  - build
+  - test
+  - dockerize
+  - deploy
+
+# 1) Збірка бекенду
+build-backend:
+  image: mcr.microsoft.com/dotnet/sdk:7.0
+  stage: build
+  script:
+    - cd backend
+    - dotnet restore
+    - dotnet build --configuration Release
+  artifacts:
+    paths:
+      - backend/bin/
+      - backend/obj/
+
+# 2) Тести бекенду
+test-backend:
+  image: mcr.microsoft.com/dotnet/sdk:7.0
+  stage: test
+  script:
+    - cd backend
+    - dotnet test
+
+# 3) Збірка фронтенду
+build-frontend:
+  image: node:18-alpine
+  stage: build
+  script:
+    - cd frontend
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - frontend/build/
+
+# 4) Створення та пуш Docker-образів
+dockerize:
+  image: docker:latest
+  services:
+    - name: docker:dind
+      command:
+        - "--insecure-registry=192.168.0.107:5050"
+  stage: dockerize
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_JOB_TOKEN" $CI_REGISTRY
+  script:
+    - docker-compose build
+    - docker-compose push
+  only:
+    - main
+
+
+# 5) Деплой на VM через docker-compose
+deploy:
+  image: docker:latest
+  services:
+    - docker:dind
+  stage: deploy
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+  script:
+    - docker-compose pull
+    - docker-compose up -d
+  only:
+    - main

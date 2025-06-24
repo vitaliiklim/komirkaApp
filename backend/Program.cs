@@ -1,67 +1,123 @@
+// backend/Program.cs
+using System;
+using System.Linq;
+using System.Text;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using KomirkaApp.Api.Data;
+using KomirkaApp.Api.Models;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1) Додаємо CORS та політику, що дозволяє
-//     - Origin: http://192.168.0.107:3000
-//     - будь‐які заголовки і методи
-//     - передавати кукі/креденсіали
+// 1) CORS — дозволяємо фронтенд
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReact", policy =>
-    {
-        policy
-            .WithOrigins("http://192.168.0.107:3000")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-    });
+    options.AddPolicy("AllowFrontend", policy =>
+        policy.WithOrigins("http://localhost:3000", "http://192.168.0.107:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials());
 });
 
-// 2) In‐Memory база для тесту
+// 2) EF Core + MySQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseInMemoryDatabase("KomirkaDb"));
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        new MySqlServerVersion(new Version(8, 0, 28)),
+        mysql => mysql.EnableRetryOnFailure()
+    )
+);
 
-// 3) JWT‐автентифікація (приклад без валідації issuer/audience)
+// 3) JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+    .AddJwtBearer(opts =>
     {
-        options.TokenValidationParameters = new TokenValidationParameters
+        var key = builder.Configuration["Jwt:Key"]
+                  ?? throw new InvalidOperationException("JWT Key not configured");
+        opts.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer           = false,
-            ValidateAudience         = false,
-            ValidateLifetime         = true,
-            ValidateIssuerSigningKey = false
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidateAudience = false,
+            ClockSkew = TimeSpan.Zero
         };
     });
+builder.Services.AddAuthorization();
 
-// 4) Твої сервіси
-builder.Services.AddScoped<SmsService>();
-builder.Services.AddScoped<PaymentService>();
-builder.Services.AddScoped<MapService>();
-
-// 5) Контролери
+// 4) Controllers + Swagger/OpenAPI
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "KomirkaApp API", Version = "v1" });
+});
 
 var app = builder.Build();
 
-// 6) Пайплайн
+// 5) Dev-only middleware
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "KomirkaApp API V1");
+    });
+}
+
+// 6) Routing, CORS, Auth
 app.UseRouting();
-
-// 6.1) Вмикаємо глобальну CORS‐політику
-app.UseCors("AllowReact");
-
-// 6.2) Аутентифікація / авторизація
+app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 7) Мапимо контролери
-app.MapControllers();
+// 7) Ініціалізація БД + сидування двох камер
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.EnsureCreated();
 
-// 8) Старт
+    if (!db.Lockers.Any())
+    {
+        db.Lockers.AddRange(
+            new Locker {
+                Address    = "Вул. Хрещатик, 1",
+                Latitude   = 50.4501,
+                Longitude  = 30.5234,
+                Size       = "S",
+                Capacity   = 1,
+                MaxWeight  = 10,
+                HourlyPrice = 5m,
+                DailyPrice  = 20m,
+                HasVideo    = true,
+                HasCooling  = false
+            },
+            new Locker {
+                Address    = "Вул. Сагайдачного, 10",
+                Latitude   = 50.4531,
+                Longitude  = 30.5273,
+                Size       = "M",
+                Capacity   = 2,
+                MaxWeight  = 20,
+                HourlyPrice = 8m,
+                DailyPrice  = 30m,
+                HasVideo    = true,
+                HasCooling  = true
+            }
+        );
+        db.SaveChanges();
+    }
+}
+
+// 8) Мапимо контролери та стартуємо
+app.MapControllers();
 app.Run();

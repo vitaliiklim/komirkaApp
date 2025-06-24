@@ -1,14 +1,32 @@
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using KomirkaApp.Api.Data;
+using KomirkaApp.Api.Models;
 
-[ApiController]
-[Route("api/[controller]")]
-public class LockersController : ControllerBase
+namespace KomirkaApp.Api.Controllers
 {
-    [HttpGet]
-    public IEnumerable<Locker> GetLockers()
+    [ApiController]
+    [Route("api/[controller]")]
+    public class LockersController : ControllerBase
     {
-        return new[] { new Locker { Id = 1, Latitude = 49.5, Longitude = 25.6, LocationName = "TZ Center", PricePerHour = 10 } };
+        private readonly ApplicationDbContext _db;
+        public LockersController(ApplicationDbContext db) => _db = db;
+
+        // GET /api/lockers
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var list = await _db.Lockers.ToListAsync();
+            return Ok(list);
+        }
+
+        // GET /api/lockers/{id}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            var locker = await _db.Lockers.FindAsync(id);
+            if (locker == null) return NotFound();
+            return Ok(locker);
+        }
     }
 }

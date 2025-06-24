@@ -1,11 +1,18 @@
 using Microsoft.EntityFrameworkCore;
+using KomirkaApp.Api.Models;
 
-public class ApplicationDbContext : DbContext
+namespace KomirkaApp.Api.Data
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) {}
+    public class ApplicationDbContext : DbContext
+    {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+        }
 
-    public DbSet<User> Users { get; set; } = null!;
-    public DbSet<Locker> Lockers { get; set; } = null!;
-    public DbSet<Booking> Bookings { get; set; } = null!;
-    public DbSet<Payment> Payments { get; set; } = null!;
+        public DbSet<User> Users { get; set; } = null!;
+        public DbSet<Locker> Lockers { get; set; } = null!;
+        public DbSet<Booking> Bookings { get; set; } = null!;
+        public DbSet<Payment> Payments { get; set; } = null!;
+    }
 }

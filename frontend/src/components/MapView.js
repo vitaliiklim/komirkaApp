@@ -1,11 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import { useNavigate } from 'react-router-dom';
+import { fetchLockers } from '../api/lockers';
+import './MapView.css';
 
-export function MapView({ lockers }) {
+export default function MapView() {
+  const [lockers, setLockers] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchLockers().then(setLockers).catch(console.error);
+  }, []);
+
   return (
-    <ul>
+    <MapContainer center={[50.45, 30.52]} zoom={12} className="map-container">
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       {lockers.map(l => (
-        <li key={l.id}>{l.locationName} ({l.latitude}, {l.longitude})</li>
+        <Marker key={l.id} position={[l.latitude, l.longitude]}>
+          <Popup>
+            <strong>{l.address}</strong><br />
+            Size: {l.size}<br />
+            {l.hourlyPrice}$/h, {l.dailyPrice}$/day<br />
+            {l.hasVideo && '📹 '} {l.hasCooling && '❄️ '}<br />
+            <button onClick={() => navigate(`/booking/${l.id}`)}>Book</button>
+          </Popup>
+        </Marker>
       ))}
-    </ul>
+    </MapContainer>
   );
 }

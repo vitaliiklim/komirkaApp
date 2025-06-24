@@ -1,10 +1,23 @@
 using System.Collections.Generic;
-using System.Linq;
-public class MapService
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using KomirkaApp.Api.Data;
+using KomirkaApp.Api.Models;
+
+namespace KomirkaApp.Api.Services
 {
-    public IEnumerable<Locker> GetNearby(double lat, double lon)
+    public class MapService
     {
-        // stub: повертати список камер поблизу
-        return Enumerable.Empty<Locker>();
+        private readonly ApplicationDbContext _db;
+        public MapService(ApplicationDbContext db)
+        {
+            _db = db;
+        }
+
+        // Повертає список всіх камер схову
+        public async Task<List<Locker>> GetAllLockersAsync()
+        {
+            return await _db.Lockers.ToListAsync();
+        }
     }
 }

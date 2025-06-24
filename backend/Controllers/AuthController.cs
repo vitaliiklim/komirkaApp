@@ -1,43 +1,87 @@
+// backend/Controllers/AuthController.cs
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using KomirkaApp.Api.Data;
+using KomirkaApp.Api.Dtos;
+using KomirkaApp.Api.Models;
+using BCrypt.Net;
 
-[ApiController]
-[Route("api/[controller]")]
-public class AuthController : ControllerBase
+namespace KomirkaApp.Api.Controllers
 {
-    private readonly ApplicationDbContext _db;
-    private readonly SmsService _sms;
-
-    public AuthController(ApplicationDbContext db, SmsService sms)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AuthController : ControllerBase
     {
-        _db = db;
-        _sms = sms;
-    }
+        private readonly ApplicationDbContext _db;
+        private readonly IConfiguration _cfg;
 
-    [HttpPost("register")]
-    public IActionResult Register(RegisterDto dto)
-    {
-        // логіка реєстрації
-        return Ok();
-    }
+        public AuthController(ApplicationDbContext db, IConfiguration cfg)
+        {
+            _db = db;
+            _cfg = cfg;
+        }
 
-    [HttpPost("login")]
-    public IActionResult Login(LoginDto dto)
-    {
-        // логіка логіну
-        return Ok();
-    }
+        // POST: api/auth/register
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+        {
+            // Перевіряємо, чи такий email вже зареєстрований
+            if (await _db.Users.AnyAsync(u => u.Email == dto.Email))
+                return Conflict(new { message = "Email is already registered." });
 
-    [HttpPost("send-otp")]
-    public IActionResult SendOtp(PhoneDto dto)
-    {
-        _sms.Send(dto.PhoneNumber, "Ваш код: 1234");
-        return Ok();
-    }
+            // Хешуємо пароль
+            var hash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
 
-    [HttpPost("verify-otp")]
-    public IActionResult VerifyOtp(OtpDto dto)
-    {
-        // логіка перевірки OTP
-        return Ok();
+            // Створюємо користувача
+            var user = new User
+            {
+                Email = dto.Email,
+                PasswordHash = hash,
+                PhoneNumber = string.Empty,      // Заповнюємо порожнім рядком, бо NOT NULL у БД
+                IsPhoneConfirmed = false
+            };
+
+            _db.Users.Add(user);
+            await _db.SaveChangesAsync();
+
+            // Повертаємо підтвердження успіху
+            return Ok(new { message = "Registration successful." });
+        }
+
+        // POST: api/auth/login
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
+        {
+            var user = await _db.Users.SingleOrDefaultAsync(u => u.Email == dto.Email);
+            if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
+                return Unauthorized(new { message = "Invalid credentials." });
+
+            // Формуємо JWT
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email)
+            };
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_cfg["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var jwt = new JwtSecurityToken(
+                issuer: _cfg["Jwt:Issuer"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(1),
+                signingCredentials: creds
+            );
+
+            return Ok(new
+            {
+                token = new JwtSecurityTokenHandler().WriteToken(jwt)
+            });
+        }
     }
 }
