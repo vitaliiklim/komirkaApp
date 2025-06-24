@@ -14,9 +14,28 @@ namespace KomirkaApp.Api.Controllers
 
         // GET /api/lockers
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+            [FromQuery] string? size,
+            [FromQuery] bool? video,
+            [FromQuery] bool? cooling,
+            [FromQuery] decimal? maxPrice)
         {
-            var list = await _db.Lockers.ToListAsync();
+            var query = _db.Lockers.AsQueryable();
+
+            if (!string.IsNullOrEmpty(size))
+                query = query.Where(l => l.Size == size);
+
+            if (video.HasValue)
+                query = query.Where(l => l.HasVideo == video.Value);
+
+            if (cooling.HasValue)
+                query = query.Where(l => l.HasCooling == cooling.Value);
+
+            if (maxPrice.HasValue)
+                query = query.Where(l => l.HourlyPrice <= maxPrice.Value ||
+                                         l.DailyPrice <= maxPrice.Value);
+
+            var list = await query.ToListAsync();
             return Ok(list);
         }
 
