@@ -15,13 +15,13 @@ export default function AuthForm() {
     try {
       if (mode === 'register') {
         await register({ email, password })
-        alert('Registration successful! You can now login.')
-        navigate('/auth/login')
+        alert('Registration successful!')
+        navigate('/')
       } else {
         const { token } = await login({ email, password })
         localStorage.setItem('token', token)
         axios.defaults.headers.common.Authorization = `Bearer ${token}`
-        navigate('/dashboard')
+        navigate('/lockers')
       }
     } catch (err) {
       alert(err.response?.data?.message || err.message)

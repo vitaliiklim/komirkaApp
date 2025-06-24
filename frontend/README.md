@@ -27,3 +27,7 @@ docker build -t komirka-frontend .
 docker run -p 3000:80 komirka-frontend
 ```
 The application is also included in `docker-compose.yml` and can be launched alongside the backend using `docker-compose up --build` from the repository root.
+
+When `REACT_APP_API_URL` is not provided during the build, the frontend will
+call the API at `http://<current-hostname>:8000/api`. To point it to a different
+address, supply the `REACT_APP_API_URL` build argument.
