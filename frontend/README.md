@@ -13,6 +13,12 @@ REACT_APP_API_URL=http://localhost:5000/api npm start
 ```
 This runs the app in development mode on `http://localhost:3000`.
 
+## Map Filters
+The locker map now includes a filter panel allowing you to filter by size,
+additional services and maximum price. The React component issues GET requests
+with query parameters, so the backend must run the latest code from this
+repository.
+
 ## Building for Production
 ```bash
 npm run build
