@@ -30,7 +30,7 @@ export default function MapView() {
             <button onClick={() => navigate(`/booking/${l.id}`)}>Book</button>
           </Popup>
         </Marker>
-      ))
+      ))}
     </MapContainer>
   );
 }
