@@ -10,10 +10,8 @@ export default function LoginForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log('Logging in with', email, password)
     try {
       const { token } = await login({ email, password })
-      console.log('Received token', token)
       localStorage.setItem('token', token)
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
       navigate('/dashboard')
