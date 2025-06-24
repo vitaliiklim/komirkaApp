@@ -19,14 +19,18 @@ export default function MapView() {
       {lockers.map(l => (
         <Marker key={l.id} position={[l.latitude, l.longitude]}>
           <Popup>
-            <strong>{l.address}</strong><br />
-            Size: {l.size}<br />
-            {l.hourlyPrice}$/h, {l.dailyPrice}$/day<br />
-            {l.hasVideo && '📹 '} {l.hasCooling && '❄️ '}<br />
+            <strong>{l.address}</strong>
+            <br />
+            Size: {l.size}
+            <br />
+            {l.hourlyPrice}$/h, {l.dailyPrice}$/day
+            <br />
+            {l.hasVideo && '📹 '} {l.hasCooling && '❄️ '}
+            <br />
             <button onClick={() => navigate(`/booking/${l.id}`)}>Book</button>
           </Popup>
         </Marker>
-      ))}
+      ))
     </MapContainer>
   );
 }
