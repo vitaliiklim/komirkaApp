@@ -27,7 +27,7 @@ services:
       dockerfile: Dockerfile
       args:
         # Арґумент, який CRA підхоплює при збірці
-        REACT_APP_API_URL: http://192.168.0.107:8000/api
+        REACT_APP_API_URL: http://api:80/api
     ports:
       - "3000:80"
     depends_on:
