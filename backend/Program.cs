@@ -88,32 +88,23 @@ using (var scope = app.Services.CreateScope())
 
     if (!db.Lockers.Any())
     {
-        db.Lockers.AddRange(
-            new Locker {
-                Address    = "Вул. Хрещатик, 1",
-                Latitude   = 50.4501,
-                Longitude  = 30.5234,
-                Size       = "S",
-                Capacity   = 1,
-                MaxWeight  = 10,
-                HourlyPrice = 5m,
-                DailyPrice  = 20m,
-                HasVideo    = true,
-                HasCooling  = false
-            },
-            new Locker {
-                Address    = "Вул. Сагайдачного, 10",
-                Latitude   = 50.4531,
-                Longitude  = 30.5273,
-                Size       = "M",
-                Capacity   = 2,
-                MaxWeight  = 20,
-                HourlyPrice = 8m,
-                DailyPrice  = 30m,
-                HasVideo    = true,
-                HasCooling  = true
-            }
-        );
+        var rand = new Random();
+        for (int i = 1; i <= 30; i++)
+        {
+            db.Lockers.Add(new Locker
+            {
+                Address = $"м. Тернопіль, вул. {i}",
+                Latitude = 49.5535 + rand.NextDouble() * 0.02 - 0.01,
+                Longitude = 25.5948 + rand.NextDouble() * 0.02 - 0.01,
+                Size = i % 3 == 0 ? "L" : (i % 3 == 1 ? "S" : "M"),
+                Capacity = 1,
+                MaxWeight = 20,
+                HourlyPrice = 5m + (i % 3) * 2,
+                DailyPrice = 20m + (i % 3) * 5,
+                HasVideo = rand.Next(2) == 1,
+                HasCooling = rand.Next(2) == 1
+            });
+        }
         db.SaveChanges();
     }
 }
