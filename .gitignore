@@ -1,0 +1,17 @@
+# Node dependencies
+node_modules/
+
+# .NET build outputs
+bin/
+obj/
+
+# IDE settings
+.vs/
+*.user
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
