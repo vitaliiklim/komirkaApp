@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, Link } from 'react-router-dom'
 import { login, register } from '../api/auth'
+import Toast from './Toast'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './AuthForm.css'
 
@@ -10,14 +11,24 @@ export default function AuthForm() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [success, setSuccess] = useState(false)
+  const [toast, setToast] = useState('')
+
+  useEffect(() => {
+    if (!toast) return
+    const id = setTimeout(() => setToast(''), 3000)
+    return () => clearTimeout(id)
+  }, [toast])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
       if (mode === 'register') {
         await register({ email, password })
-        alert('Registration successful!')
-        navigate('/')
+        setSuccess(true)
+        setToast('Registration successful!')
+        setEmail('')
+        setPassword('')
       } else {
         const { token } = await login({ email, password })
         localStorage.setItem('token', token)
@@ -60,6 +71,14 @@ export default function AuthForm() {
       <button className="btn btn-link mt-3" onClick={() => navigate(mode === 'login' ? '/auth/register' : '/auth/login')}>
         {mode === 'login' ? 'Need an account? Register' : 'Have an account? Login'}
       </button>
+      {success && (
+        <div className="alert alert-success mt-3" role="alert">
+          Registration successful! You can now{' '}
+          <Link to="/auth/login" className="alert-link">log in</Link> or{' '}
+          <Link to="/lockers" className="alert-link">browse lockers</Link>.
+        </div>
+      )}
+      <Toast message={toast} onClose={() => setToast('')} />
     </div>
   )
 }

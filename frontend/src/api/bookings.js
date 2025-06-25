@@ -6,3 +6,4 @@ const API =
   `http://${window.location.hostname}:8000/api`;
 
 export const createBooking = data => axios.post(`${API}/bookings`, data);
+export const getBookings = () => axios.get(`${API}/bookings`);
