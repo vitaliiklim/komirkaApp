@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function NavBar() {
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light mb-3">
+    <nav className="navbar navbar-expand-lg mb-3" style={{ backgroundColor: '#fff' }}>
       <div className="container">
         <Link className="navbar-brand" to="/">KomirkaApp</Link>
         <div className="collapse navbar-collapse">

@@ -2,6 +2,7 @@
   max-width: 600px;
   margin: 0 auto;
   text-align: center;
+  border-top: 3px solid var(--brand-color);
 }
 .dashboard-container h1 {
   margin-bottom: 10px;

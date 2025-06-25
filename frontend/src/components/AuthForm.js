@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import { useNavigate, useParams, Link } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { login, register } from '../api/auth'
 import Toast from './Toast'
+import SuccessModal from './SuccessModal'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './AuthForm.css'
 
@@ -71,13 +72,10 @@ export default function AuthForm() {
       <button className="btn btn-link mt-3" onClick={() => navigate(mode === 'login' ? '/auth/register' : '/auth/login')}>
         {mode === 'login' ? 'Need an account? Register' : 'Have an account? Login'}
       </button>
-      {success && (
-        <div className="alert alert-success mt-3" role="alert">
-          Registration successful! You can now{' '}
-          <Link to="/auth/login" className="alert-link">log in</Link> or{' '}
-          <Link to="/lockers" className="alert-link">browse lockers</Link>.
-        </div>
-      )}
+      <SuccessModal
+        show={success}
+        onClose={() => setSuccess(false)}
+      />
       <Toast message={toast} onClose={() => setToast('')} />
     </div>
   )

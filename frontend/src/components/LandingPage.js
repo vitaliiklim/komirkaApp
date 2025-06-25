@@ -10,8 +10,8 @@ export default function LandingPage() {
       <h1 className="display-4 mb-3">Welcome to KomirkaApp</h1>
       <p className="lead mb-4">Secure Locker Rentals Made Easy</p>
       <div>
-        <button className="btn btn-primary me-2" onClick={() => navigate('/auth/login')}>Login</button>
-        <button className="btn btn-secondary" onClick={() => navigate('/auth/register')}>Register</button>
+        <button className="btn btn-danger me-2" onClick={() => navigate('/auth/login')}>Login</button>
+        <button className="btn btn-outline-danger" onClick={() => navigate('/auth/register')}>Register</button>
       </div>
     </div>
   )

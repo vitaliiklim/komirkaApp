@@ -12,7 +12,7 @@ export default function Toast({ message, onClose }) {
 
   return (
     <div className="position-fixed top-0 end-0 p-3" style={{ zIndex: 11 }}>
-      <div className="toast show align-items-center text-bg-success border-0">
+      <div className="toast show align-items-center" style={{ backgroundColor: 'var(--brand-color)', color: '#fff' }}>
         <div className="d-flex">
           <div className="toast-body">{message}</div>
           <button

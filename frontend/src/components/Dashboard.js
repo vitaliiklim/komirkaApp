@@ -17,7 +17,7 @@ export default function Dashboard() {
       <h1 className="mb-3">Dashboard</h1>
       <p>You are now logged in!</p>
       <p>
-        <a href="/lockers" className="link-primary">Browse available lockers</a>
+        <a href="/lockers" className="link-danger">Browse available lockers</a>
       </p>
       {bookings.length > 0 && (
         <div className="table-responsive mt-4">
