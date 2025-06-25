@@ -23,6 +23,10 @@ repository.
 The interface now uses Bootstrap 5 for styling. Marker icons on the map load
 properly thanks to an explicit Leaflet configuration.
 
+## Theme Toggle
+The UI now includes a light/dark mode switch in the navigation bar. The
+preference is saved in `localStorage` and applied on future visits.
+
 ## Building for Production
 ```bash
 npm run build

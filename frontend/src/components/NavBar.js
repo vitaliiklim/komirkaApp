@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { ThemeContext } from '../ThemeContext';
 
 export default function NavBar() {
+  const { theme, toggle } = useContext(ThemeContext);
+  const navbarClass = `navbar navbar-expand-lg mb-3 ${
+    theme === 'dark' ? 'navbar-dark bg-dark' : 'navbar-light bg-light'
+  }`;
+
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light mb-3">
+    <nav className={navbarClass}>
       <div className="container">
         <Link className="navbar-brand" to="/">KomirkaApp</Link>
         <div className="collapse navbar-collapse">
@@ -19,6 +25,12 @@ export default function NavBar() {
               <Link className="nav-link" to="/dashboard">Dashboard</Link>
             </li>
           </ul>
+          <button
+            className="btn btn-outline-secondary ms-3"
+            onClick={toggle}
+          >
+            {theme === 'dark' ? 'Light' : 'Dark'} Mode
+          </button>
         </div>
       </div>
     </nav>
