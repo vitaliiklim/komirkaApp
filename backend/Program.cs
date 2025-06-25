@@ -112,3 +112,5 @@ using (var scope = app.Services.CreateScope())
 // 8) Мапимо контролери та стартуємо
 app.MapControllers();
 app.Run();
+
+public partial class Program { }
