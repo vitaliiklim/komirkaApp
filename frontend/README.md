@@ -19,6 +19,10 @@ additional services and maximum price. The React component issues GET requests
 with query parameters, so the backend must run the latest code from this
 repository.
 
+## UI Refresh
+The interface now uses Bootstrap 5 for styling. Marker icons on the map load
+properly thanks to an explicit Leaflet configuration.
+
 ## Building for Production
 ```bash
 npm run build

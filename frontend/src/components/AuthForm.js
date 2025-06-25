@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import { useNavigate, useParams } from 'react-router-dom'
 import { login, register } from '../api/auth'
+import 'bootstrap/dist/css/bootstrap.min.css'
 import './AuthForm.css'
 
 export default function AuthForm() {
@@ -29,28 +30,34 @@ export default function AuthForm() {
   }
 
   return (
-    <div className="auth-container">
-      <h2>{mode === 'register' ? 'Register' : 'Login'}</h2>
+    <div className="auth-container bg-white p-4 rounded shadow-sm mt-5">
+      <h2 className="text-center mb-4">{mode === 'register' ? 'Register' : 'Login'}</h2>
       <form onSubmit={handleSubmit} className="auth-form">
-        <label>Email</label>
-        <input
-          type="email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          required
-        />
-        <label>Password</label>
-        <input
-          type="password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit" className="btn-primary">
+        <div className="mb-3">
+          <label className="form-label">Email</label>
+          <input
+            type="email"
+            className="form-control"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Password</label>
+          <input
+            type="password"
+            className="form-control"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit" className="btn btn-primary w-100">
           {mode === 'register' ? 'Register' : 'Login'}
         </button>
       </form>
-      <button className="link-button" onClick={() => navigate(mode === 'login' ? '/auth/register' : '/auth/login')}>
+      <button className="btn btn-link mt-3" onClick={() => navigate(mode === 'login' ? '/auth/register' : '/auth/login')}>
         {mode === 'login' ? 'Need an account? Register' : 'Have an account? Login'}
       </button>
     </div>
