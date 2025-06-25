@@ -1,5 +1,9 @@
 .landing-container {
   height: 100vh;
-  background: linear-gradient(135deg, #6B73FF 0%, #000DFF 100%);
+  background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
   color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
