@@ -6,6 +6,7 @@ import AuthForm from './components/AuthForm';
 import MapView from './components/MapView';
 import Dashboard from './components/Dashboard';
 import BookingPage from './components/BookingPage';
+import ShareAccessPage from './components/ShareAccessPage';
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/lockers" element={<MapView />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/booking/:id" element={<BookingPage />} />
+        <Route path="/share/:id" element={<ShareAccessPage />} />
       </Routes>
     </Router>
   );

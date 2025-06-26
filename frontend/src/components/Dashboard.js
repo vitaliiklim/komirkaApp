@@ -69,6 +69,7 @@ export default function Dashboard() {
                 <th>From</th>
                 <th>To</th>
                 <th>Price</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -79,6 +80,9 @@ export default function Dashboard() {
                   <td>{new Date(b.startTime).toLocaleString()}</td>
                   <td>{new Date(b.endTime).toLocaleString()}</td>
                   <td>{b.price}</td>
+                  <td>
+                    <a className="btn btn-sm btn-secondary" href={`/share/${b.id}`}>Share</a>
+                  </td>
                 </tr>
               ))}
             </tbody>
