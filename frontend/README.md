@@ -27,24 +27,3 @@ properly thanks to an explicit Leaflet configuration.
 The UI now includes a light/dark mode switch in the navigation bar. The
 preference is saved in `localStorage` and applied on future visits.
 
-## Share Access
-To generate a temporary code for a booking, visit `/share/{bookingId}` from the dashboard.
-
-## Building for Production
-```bash
-npm run build
-```
-The optimized output will be in the `build/` directory. You can serve it with any static file server or via Docker.
-
-### Docker
-You can build and run the frontend using Docker:
-```bash
-cd frontend
-docker build -t komirka-frontend .
-docker run -p 3000:80 komirka-frontend
-```
-The application is also included in `docker-compose.yml` and can be launched alongside the backend using `docker-compose up --build` from the repository root.
-
-When `REACT_APP_API_URL` is not provided during the build, the frontend will
-call the API at `http://<current-hostname>:8000/api`. To point it to a different
-address, supply the `REACT_APP_API_URL` build argument.
