@@ -27,6 +27,9 @@ properly thanks to an explicit Leaflet configuration.
 The UI now includes a light/dark mode switch in the navigation bar. The
 preference is saved in `localStorage` and applied on future visits.
 
+## Share Access
+To generate a temporary code for a booking, visit `/share/{bookingId}` from the dashboard.
+
 ## Building for Production
 ```bash
 npm run build

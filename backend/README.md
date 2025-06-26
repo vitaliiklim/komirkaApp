@@ -23,3 +23,14 @@ This command builds the images and launches `db`, `api` and `frontend` services.
 
 ## Configuration
 Database and JWT settings are defined in `appsettings.json`. They can also be overridden via environment variables such as `ConnectionStrings__DefaultConnection`.
+
+## Access Keys
+The `AccessKeys` API allows generating a temporary code for sharing locker access:
+
+```bash
+POST /api/accesskeys
+{
+  "bookingId": 1,
+  "expiresAt": "2025-12-31T23:59:00Z"
+}
+```
