@@ -14,5 +14,6 @@ namespace KomirkaApp.Api.Data
         public DbSet<Locker> Lockers { get; set; } = null!;
         public DbSet<Booking> Bookings { get; set; } = null!;
         public DbSet<Payment> Payments { get; set; } = null!;
+        public DbSet<AccessKey> AccessKeys { get; set; } = null!;
     }
 }
